@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+option go_package = "github.com/ihyoduou/nordlayer-helper/pb";
+
+import "common.proto";
+
+message Payload {
+  int64 type = 1;
+  repeated string data = 2;
+  string internal_ip = 6;
+  //string external_ip = 7; // ? position changed?
+  string external_ip = 8;
+  string protocol = 9;
+  string connected_gateway = 10;
+  string network = 11;
+}
+
+enum Protocol {
+  UNKNOWN_PROTOCOL = 0;
+  UDP = 1;
+  TCP = 2;
+}
+
+message GetStatus {
+  Payload Payload = 1;
+}
+
+service Status {
+  rpc Get(Empty) returns (GetStatus);
+}

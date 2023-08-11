@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+option go_package = "github.com/ihyoduou/nordlayer-helper/pb";
+
+message Empty {}
+
+message Bool {
+  bool value = 1;
+}
+
+message GenericPayload {
+  int64 type = 1;
+  repeated string data = 2;
+}
