@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+option go_package = "github.com/ihyoduou/nordlayer-helper/pb";
+
+import "common.proto";
+
+message Gateways {
+	string currently_connected = 1;
+	repeated string available_gateways = 2;
+	repeated string available_gateways_id = 3;
+}
+
+message ConnectRequest {
+  string gateway_name = 1;
+}
+
+message GetGateways {
+	Gateways Gateways = 1;
+}
+
+service Vpn {
+	rpc Gateways(Empty) returns (GetGateways);
+	rpc Connect(ConnectRequest) returns (stream GenericPayload);
+	//rpc Disconnect(Empty) returns (stream Payload);
+}
