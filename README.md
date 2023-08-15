@@ -17,12 +17,14 @@ On Fedora with GNOME desktop, you need to install [AppIndicator and KStatusNotif
 I am also planning to include an option to change gateways and a notification system about being offline, External IP address changes.
 
 ## Building
-To build this application, you need to have `make gcc libgtk-3-dev libayatana-appindicator3-dev protoc`
+To build this application, you need to have `make gcc libgtk-3-dev libayatana-appindicator3-dev protobuf-compiler`
+
+For some reason `libayatana-appindicator` packages are not available in Fedora, so i used Ubuntu in[distrobox](https://github.com/89luca89/distrobox) for development
 ### Build instructions
 ```
 make build
 ```
-This command will build `pb.go` files from `.proto` and build the application.
+This command will build `pb.go` files from protobuf files and build the application.
 
 ## Disclaimer
 This repository is not associated in any way with Nord Security/Nordlayer
