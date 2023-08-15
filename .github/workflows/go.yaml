@@ -23,6 +23,13 @@ jobs:
 
     - name: Setup dependencies
       run: sudo apt-get install -y make gcc libgtk-3-dev libayatana-appindicator3-dev protobuf-compiler && go install github.com/golang/protobuf/protoc-gen-go@latest
+      
+    - name: Setup PATH
+      run: |
+        export GOROOT=/usr/local/go
+        export GOPATH=$HOME/go
+        export GOBIN=$GOPATH/bin
+        export PATH=$PATH:$GOROOT:$GOPATH:$GOBIN
 
     - name: Build
       run: make build
