@@ -49,8 +49,7 @@ func onReady() {
 
 	// Refreshing nordlayer status
 	go func() {
-
-		tick := time.Tick(2000 * time.Millisecond)
+		tick := time.Tick(5 * time.Second)
 		for range tick {
 
 			status, err := api.GetVPNStatus()
@@ -60,8 +59,6 @@ func onReady() {
 			// if connected gateway is empty (eg we are not connected), setting placeholder values
 			if status.ConnectedGateway == "" {
 				externalIp := monitor.GetExternalIp()
-				pingStats := monitor.PingHost("8.8.8.8")
-				log.Print(pingStats.AvgRtt)
 				systray.SetTemplateIcon(icon.Red, icon.Red)
 				ConnectedmenuItem.SetTitle("Connected: No")
 				InternalIPmenuItem.SetTitle(`IntIP: ?`)
