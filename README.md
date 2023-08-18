@@ -19,7 +19,21 @@ I am also planning to include an option to change gateways and a notification sy
 ## Building
 To build this application, you need to have `make gcc libgtk-3-dev libayatana-appindicator3-dev protobuf-compiler`
 
-For some reason `libayatana-appindicator` packages are not available in Fedora, so i used Ubuntu in[distrobox](https://github.com/89luca89/distrobox) for development
+For some reason `libayatana-appindicator` packages are not available in Fedora, so i used Ubuntu in [distrobox](https://github.com/89luca89/distrobox) for development
+
+Dependencies for Debian-based:
+```
+sudo apt install make gcc libgtk-3-dev libayatana-appindicator3-dev protobuf-compiler
+go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
+go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
+go mod download
+```
+If you get error like
+```
+protoc-gen-go-grpc: program not found or is not executable
+```
+Check your GOPATH (most likely you don't have `~/go/bin` in your PATH)
+
 ### Build instructions
 ```
 make build
