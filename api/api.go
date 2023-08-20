@@ -12,17 +12,21 @@ import (
 
 const (
 	ADDRESS = "unix:///run/nordlayer/nordlayer.sock"
+	TIMEOUT = time.Second
 )
 
 func GetVPNStatus() (*pb.Payload, error) {
-	log.Print("Trying to connect")
-	ctx, _ := context.WithTimeout(context.Background(), 5*time.Second)
-	conn, err := grpc.DialContext(ctx, ADDRESS, grpc.WithInsecure(), grpc.WithBlock())
-	if err != nil {
-		log.Fatalf("did not connect: %s", err)
-	}
 
-	defer conn.Close()
+	log.Print("[vpnstatus] Trying to connect")
+	ctx, _ := context.WithTimeout(context.Background(), TIMEOUT)
+	conn, err := grpc.DialContext(ctx, ADDRESS, grpc.WithInsecure(), grpc.WithBlock())
+
+	if err != nil {
+		log.Printf("did not connect: %s", err)
+		return &pb.Payload{}, err
+	} else {
+		defer conn.Close()
+	}
 
 	log.Print("Trying to create new daemon client")
 	c := pb.NewStatusClient(conn)
@@ -30,7 +34,7 @@ func GetVPNStatus() (*pb.Payload, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 
 	defer cancel()
-	log.Print("Trying to get status")
+	log.Print("[vpnstatus] Trying to get status")
 	res, err := c.Get(ctx, &pb.Empty{})
 
 	if err != nil {
@@ -43,22 +47,23 @@ func GetVPNStatus() (*pb.Payload, error) {
 }
 
 func GetVPNGateways() (*pb.Gateways, error) {
-	log.Print("Trying to connect")
-	ctx, _ := context.WithTimeout(context.Background(), 5*time.Second)
+
+	ctx, _ := context.WithTimeout(context.Background(), TIMEOUT)
 	conn, err := grpc.DialContext(ctx, ADDRESS, grpc.WithInsecure(), grpc.WithBlock())
+
 	if err != nil {
-		log.Fatalf("did not connect: %s", err)
+		log.Printf("did not connect: %s", err)
+		return &pb.Gateways{}, err
+	} else {
+		defer conn.Close()
 	}
-
-	defer conn.Close()
-
 	log.Print("Trying to create new daemon client")
 	c := pb.NewVpnClient(conn)
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 
 	defer cancel()
-	log.Print("Trying to get status")
+	log.Print("[vpngateways] Trying to get status")
 	res, err := c.Gateways(ctx, &pb.Empty{})
 
 	if err != nil {
@@ -73,29 +78,31 @@ func GetVPNGateways() (*pb.Gateways, error) {
 	return res.Gateways, err
 }
 
-func VPNConnect(gateway string) error {
-	log.Print("Trying to connect")
-	ctx, _ := context.WithTimeout(context.Background(), 5*time.Second)
-	conn, err := grpc.DialContext(ctx, ADDRESS, grpc.WithInsecure(), grpc.WithBlock())
-	if err != nil {
-		log.Fatalf("did not connect: %s", err)
-	}
+// func VPNConnect(gateway string) error {
 
-	defer conn.Close()
+// 	ctx, _ := context.WithTimeout(context.Background(), TIMEOUT)
+// 	conn, err := grpc.DialContext(ctx, ADDRESS, grpc.WithInsecure(), grpc.WithBlock())
 
-	log.Print("Trying to create new daemon client")
-	c := pb.NewVpnClient(conn)
+// 	if err != nil {
+// 		log.Printf("did not connect: %s", err)
+// 		return &pb.Payload{}, err
+// 	} else {
+// 		defer conn.Close()
+// 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+// 	log.Print("Trying to create new daemon client")
+// 	c := pb.NewVpnClient(conn)
 
-	defer cancel()
-	log.Print("Trying to get status")
-	res, err := c.Connect(ctx, &pb.ConnectRequest{GatewayName: gateway})
+// 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 
-	if err != nil {
-		log.Fatalf("could not send: %v", err)
-	}
+// 	defer cancel()
+// 	log.Print("Trying to get status")
+// 	res, err := c.Connect(ctx, &pb.ConnectRequest{GatewayName: gateway})
 
-	log.Print(res)
-	return err
-}
+// 	if err != nil {
+// 		log.Fatalf("could not send: %v", err)
+// 	}
+
+// 	log.Print(res)
+// 	return err
+// }
