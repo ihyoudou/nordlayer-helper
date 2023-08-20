@@ -8,8 +8,7 @@ message Payload {
   int64 type = 1;
   repeated string data = 2;
   string internal_ip = 6;
-  //string external_ip = 7; // ? position changed?
-  string external_ip = 8;
+  string server_ip = 8;
   string protocol = 9;
   string connected_gateway = 10;
   string network = 11;

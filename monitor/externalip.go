@@ -11,7 +11,7 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-func GetExternalIp() []byte {
+func GetExternalIp() string {
 	requestURL := "https://ipinfo.io/ip"
 	client := http.Client{Timeout: 3 * time.Second}
 	res, err := client.Get(requestURL)
@@ -19,13 +19,14 @@ func GetExternalIp() []byte {
 		errcode, _ := status.FromError(err)
 		errmsg := fmt.Sprintf("Unable to check external IP: %s", errcode.Message())
 		beeep.Alert("NordLayer Helper", errmsg, "")
-		log.Fatalf("[ExternalIP] client: could not connect to endpoint: %s ", err)
+		log.Printf(errmsg)
+		return "0.0.0.0"
 	}
 	resBody, err := io.ReadAll(res.Body)
 	if err != nil {
 		log.Printf("[ExternalIP] client: could not read response body: %s\n", err)
 	}
 	log.Printf("[ExternalIP] Got response status: %d", res.StatusCode)
-	log.Printf("[ExternalIP] Got response body: %d", resBody)
-	return resBody
+	log.Printf("[ExternalIP] Got response body: %s", string(resBody))
+	return string(resBody)
 }
