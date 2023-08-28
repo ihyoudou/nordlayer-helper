@@ -15,7 +15,7 @@ import (
 
 const (
 	APP_NAME    = "Nordlayer Helper"
-	CHECK_EVERY = 5 * time.Second
+	CHECK_EVERY = 30 * time.Second
 )
 
 func main() {
