@@ -38,9 +38,9 @@ func GetVPNStatus() (*pb.Payload, error) {
 	res, err := c.Get(ctx, &pb.Empty{})
 
 	if err != nil {
-		log.Fatalf("could not send: %v", err)
+		log.Fatalf("[vpnstatus] could not send: %v", err)
 		code := status.Code(err)
-		log.Fatalf("got error: %v", code)
+		log.Fatalf("[vpnstatus] got error: %v", code)
 	}
 	log.Print(res.Payload)
 	return res.Payload, err
@@ -52,12 +52,12 @@ func GetVPNGateways() (*pb.Gateways, error) {
 	conn, err := grpc.DialContext(ctx, ADDRESS, grpc.WithInsecure(), grpc.WithBlock())
 
 	if err != nil {
-		log.Printf("did not connect: %s", err)
+		log.Printf("[vpngateways] did not connect: %s", err)
 		return &pb.Gateways{}, err
 	} else {
 		defer conn.Close()
 	}
-	log.Print("Trying to create new daemon client")
+	log.Print("[vpngateways] Trying to create new daemon client")
 	c := pb.NewVpnClient(conn)
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
@@ -67,15 +67,42 @@ func GetVPNGateways() (*pb.Gateways, error) {
 	res, err := c.Gateways(ctx, &pb.Empty{})
 
 	if err != nil {
-		code, ok := status.FromError(err)
-		log.Print(ok)
-		log.Fatalf("got error: %v", code.Message())
-		log.Fatalf("vpngateways: could not send: %v", err)
+		code, _ := status.FromError(err)
+		log.Fatalf("[vpngateways] got error: %v", code.Message())
+		log.Fatalf("[vpngateways] could not send: %v", err)
 		// user_id not set
 	}
 
 	log.Print(res.Gateways)
 	return res.Gateways, err
+}
+
+func GetVersion() (string, error) {
+	ctx, _ := context.WithTimeout(context.Background(), TIMEOUT)
+	conn, err := grpc.DialContext(ctx, ADDRESS, grpc.WithInsecure(), grpc.WithBlock())
+
+	if err != nil {
+		log.Printf("[GetVersion] did not connect: %s", err)
+		return "", err
+	} else {
+		defer conn.Close()
+	}
+	log.Print("[GetVersion] Trying to create new daemon client")
+	c := pb.NewVersionClient(conn)
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+
+	defer cancel()
+	log.Print("[GetVersion] Trying to get status")
+	res, err := c.Info(ctx, &pb.Empty{})
+
+	if err != nil {
+		code, _ := status.FromError(err)
+		log.Fatalf("[GetVersion] got error: %v", code.Message())
+		log.Fatalf("[GetVersion] could not send: %v", err)
+	}
+
+	return res.Type[0], err
 }
 
 // func VPNConnect(gateway string) error {

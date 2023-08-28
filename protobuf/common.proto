@@ -9,6 +9,6 @@ message Bool {
 }
 
 message GenericPayload {
-  int64 type = 1;
+  repeated string type = 1;
   repeated string data = 2;
 }

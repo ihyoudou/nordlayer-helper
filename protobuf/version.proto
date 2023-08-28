@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+option go_package = "github.com/ihyoduou/nordlayer-helper/pb";
+
+import "common.proto";
+
+service Version {
+	rpc Info(Empty) returns (GenericPayload);
+}
