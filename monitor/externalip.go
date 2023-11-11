@@ -28,5 +28,6 @@ func GetExternalIp() string {
 	}
 	log.Printf("[ExternalIP] Got response status: %d", res.StatusCode)
 	log.Printf("[ExternalIP] Got response body: %s", string(resBody))
+	defer res.Body.Close()
 	return string(resBody)
 }

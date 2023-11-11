@@ -9,7 +9,6 @@ import (
 	"github.com/getlantern/systray"
 	"github.com/ihyoudou/nordlayer-helper/api"
 	"github.com/ihyoudou/nordlayer-helper/icon"
-	"github.com/ihyoudou/nordlayer-helper/monitor"
 	"google.golang.org/grpc/status"
 )
 
@@ -28,8 +27,8 @@ func onReady() {
 
 	// inital menu items
 	ConnectedmenuItem := systray.AddMenuItem("Connected: No", "Logged in?")
-	InternalIPmenuItem := systray.AddMenuItem(`IntIP: ?`, "Internal IP")
-	ExternalIPmenuItem := systray.AddMenuItem(`ExtIP: ?`, "External IP")
+	InternalIPmenuItem := systray.AddMenuItem(`Internal IP: ?`, "Internal network IP")
+	ExternalIPmenuItem := systray.AddMenuItem(`Server IP: ?`, "IP of vpn server endpoint")
 	ProtocolmenuItem := systray.AddMenuItem(`Protocol: ?`, "VPN Protocol")
 
 	// quit function
@@ -61,7 +60,7 @@ func onReady() {
 	go func() {
 		tick := time.Tick(CHECK_EVERY)
 		unableToConnectAlert := false
-		lastIpCheck := "0.0.0.0"
+//		lastIpCheck := "0.0.0.0"
 		for range tick {
 
 			status, err := api.GetVPNStatus()
@@ -80,32 +79,32 @@ func onReady() {
 			}
 
 			// Checking external IP
-			externalIp := monitor.GetExternalIp()
-			log.Printf("lastip: %s", lastIpCheck)
-			log.Printf("extip: %s", externalIp)
-			if lastIpCheck != externalIp {
-				if lastIpCheck != "0.0.0.0" {
-					msg := fmt.Sprintf("ExternalIP has changed from %s to %s", lastIpCheck, externalIp)
-					log.Printf(msg)
-					beeep.Alert(APP_NAME, msg, "")
-				}
-				lastIpCheck = externalIp
-			}
+//			externalIp := monitor.GetExternalIp()
+//			log.Printf("lastip: %s", lastIpCheck)
+//			log.Printf("extip: %s", externalIp)
+//			if lastIpCheck != externalIp {
+//				if lastIpCheck != "0.0.0.0" {
+//					msg := fmt.Sprintf("ExternalIP has changed from %s to %s", lastIpCheck, externalIp)
+//					log.Printf(msg)
+//					beeep.Alert(APP_NAME, msg, "")
+//				}
+//				lastIpCheck = externalIp
+//			}
 
 			// if connected gateway is empty (eg we are not connected), setting placeholder values
 			if status.ConnectedGateway == "" {
 				systray.SetTemplateIcon(icon.Red, icon.Red)
 				ConnectedmenuItem.SetTitle("Connected: No")
-				InternalIPmenuItem.SetTitle(`IntIP: ?`)
+				InternalIPmenuItem.SetTitle(`Internal IP: ?`)
 				ProtocolmenuItem.SetTitle(`Protocol: ?`)
 			} else {
 				systray.SetTemplateIcon(icon.Green, icon.Green)
 				ConnectedmenuItem.SetTitle(fmt.Sprintf("Connected: %s", status.ConnectedGateway))
-				InternalIPmenuItem.SetTitle(fmt.Sprintf("IntIP: %s", status.InternalIp))
+				InternalIPmenuItem.SetTitle(fmt.Sprintf("Internal IP: %s", status.InternalIp))
 				ProtocolmenuItem.SetTitle(fmt.Sprintf("Protocol: %s", status.Protocol))
 			}
 
-			ExternalIPmenuItem.SetTitle(fmt.Sprintf("ExtIP: %s", externalIp))
+			ExternalIPmenuItem.SetTitle(fmt.Sprintf("Server IP: %s", status.ServerIp))
 
 		}
 	}()
